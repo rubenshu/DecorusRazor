@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace DecorusRazorWeb.Pages.Categories
 {
     [BindProperties]
-    public class  DeleteModel : PageModel
+    public class DeleteModel : PageModel
     {
         public readonly ApplicationDbContext _db;
 
@@ -23,11 +23,13 @@ namespace DecorusRazorWeb.Pages.Categories
 
         public async Task<IActionResult> OnPost()
         {
-            _db.Categories.Remove(Category);
-            if (Category != null)
+            var obj = _db.Categories.Find(Category.Id);
+            if (obj != null)
             {
+                _db.Categories.Remove(obj);
                 _db.SaveChanges();
-                return RedirectToPage("Index");
+                TempData["success"] = "Category deleted succesfully";
+                return RedirectToPage("index");
             }
             return Page();
         }
