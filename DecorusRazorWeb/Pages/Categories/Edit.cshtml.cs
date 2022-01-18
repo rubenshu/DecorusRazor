@@ -6,18 +6,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace DecorusRazorWeb.Pages.Categories
 {
     [BindProperties]
-    public class CreateModel : PageModel
+    public class EditModel : PageModel
     {
         public readonly ApplicationDbContext _db;
 
         public Category Category { get; set; }
 
-        public CreateModel(ApplicationDbContext db)
+        public EditModel(ApplicationDbContext db)
         {
             _db = db;
         }
-        public void OnGet()
+        public void OnGet(int id)
         {
+            Category = _db.Categories.Find(id);
         }
 
         public async Task<IActionResult> OnPost()
@@ -28,9 +29,9 @@ namespace DecorusRazorWeb.Pages.Categories
             }
             if (ModelState.IsValid)
             {
-                await _db.Categories.AddAsync(Category);
+                _db.Categories.Update(Category);
                 await _db.SaveChangesAsync();
-                TempData["success"] = "Category created succesfully";
+                TempData["success"] = "Category updated succesfully";
                 return RedirectToPage("index");
             }
             return Page();

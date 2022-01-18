@@ -6,31 +6,29 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace DecorusRazorWeb.Pages.Categories
 {
     [BindProperties]
-    public class CreateModel : PageModel
+    public class DeleteModel : PageModel
     {
         public readonly ApplicationDbContext _db;
 
         public Category Category { get; set; }
 
-        public CreateModel(ApplicationDbContext db)
+        public DeleteModel(ApplicationDbContext db)
         {
             _db = db;
         }
-        public void OnGet()
+        public void OnGet(int id)
         {
+            Category = _db.Categories.Find(id);
         }
 
         public async Task<IActionResult> OnPost()
         {
-            if(Category.Name == Category.DisplayOrder.ToString())
+            var obj = _db.Categories.Find(Category.Id);
+            if (obj != null)
             {
-                ModelState.AddModelError("Category.Name", "Name and Display Order can not be the same");
-            }
-            if (ModelState.IsValid)
-            {
-                await _db.Categories.AddAsync(Category);
-                await _db.SaveChangesAsync();
-                TempData["success"] = "Category created succesfully";
+                _db.Categories.Remove(obj);
+                _db.SaveChanges();
+                TempData["success"] = "Category deleted succesfully";
                 return RedirectToPage("index");
             }
             return Page();
